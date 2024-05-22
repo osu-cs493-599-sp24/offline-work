@@ -20,3 +20,17 @@ exports.getImageInfoById = async function (id) {
         return results[0]
     }
 }
+
+exports.updateImageTagsById = async function (id, tags) {
+    const db = getDbReference()
+    const collection = db.collection('images')
+    if (!ObjectId.isValid(id)) {
+        return null
+    } else {
+        const result = await collection.updateOne(
+            { _id: new ObjectId(id) },
+            { $set: { tags: tags }}
+        )
+        return result.matchedCount > 0
+    }
+}
