@@ -38,6 +38,9 @@ app.post("/images", upload.single("image"), async (req, res) => {
             path: req.file.path,
             contentType: req.file.mimetype
         })
+        /*
+         * Generate offline work
+         */
         res.status(200).send({ id: id })
     } else {
         res.status(400).send({
