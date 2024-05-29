@@ -3,6 +3,7 @@ const multer = require("multer")
 const crypto = require("node:crypto")
 
 const { connectToDb } = require('./lib/mongo')
+const { connectToRabbitMQ, getChannel, queueName } = require('./lib/rabbitmq')
 const { getImageInfoById, saveImageInfo } = require('./models/image')
 
 const app = express()
@@ -41,6 +42,8 @@ app.post("/images", upload.single("image"), async (req, res) => {
         /*
          * Generate offline work
          */
+        const channel = getChannel()
+        channel.sendToQueue(queueName, Buffer.from(id.toString()))
         res.status(200).send({ id: id })
     } else {
         res.status(400).send({
@@ -81,7 +84,8 @@ app.use('*', (err, req, res, next) => {
     })
 })
 
-connectToDb().then(() => {
+connectToDb().then(async () => {
+    await connectToRabbitMQ()
     app.listen(port, () => {
         console.log("== Server is running on port", port)
     })

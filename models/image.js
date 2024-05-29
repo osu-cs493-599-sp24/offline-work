@@ -22,7 +22,7 @@ exports.getImageInfoById = async function (id) {
 }
 
 exports.updateImageTagsById = async function (id, tags) {
-    const db = getDbReference()
+    const db = getDb()
     const collection = db.collection('images')
     if (!ObjectId.isValid(id)) {
         return null
